@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChainBeards</title>
+    <!-- Tambahkan Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            background: linear-gradient(45deg, #B2F2BB, #FFDAC1, #D8BFD8);
+            background-size: 300% 300%;
+            animation: gradientBG 10s ease infinite;
+            color: #4A4A4A;
+            font-family: 'Poppins', sans-serif; /* Ganti font ke Poppins */
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            background-color: #FFF9B6;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(162, 221, 240, 0.3);
+            transition: background 0.3s ease;
+        }
+        header:hover {
+            background: #A2DDF0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #4A4A4A;
+            text-shadow: 2px 2px 4px rgba(178, 242, 187, 0.3);
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.7; }
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+            transition: transform 0.5s ease;
+        }
+        .logo:hover {
+            transform: rotate(360deg);
+        }
+        .speech-bubble {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: #4A4A4A;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .logo-container:hover .speech-bubble {
+            opacity: 1;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav a {
+            color: #4A4A4A;
+            text-decoration: none;
+            font-size: 1.2rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #B2F2BB;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .mint-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #A2DDF0;
+            color: white;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.3s;
+            animation: bounce 2s infinite;
+        }
+        .mint-button:hover {
+            background-color: #7FC7D9;
+            transform: rotate(5deg) scale(1.1);
+        }
+        .mint-button::after {
+            content: 'Mint Your NFT';
+        }
+        .mint-button:hover::after {
+            content: 'Let\'s Go!';
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .nft-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px auto;
+            padding: 10px;
+            max-width: 800px;
+        }
+
+        .nft-card {
+            background-color: #FFF9B6;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(162, 221, 240, 0.3);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .nft-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nft-card:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0px 8px 20px rgba(162, 221, 240, 0.5);
+        }
+
+        .nft-card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .nft-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(178, 242, 187, 0.8);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 10px;
+        }
+        .nft-card:hover .nft-overlay {
+            opacity: 1;
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(178, 242, 187, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+
+        .roadmap {
+            margin: 50px auto;
+            max-width: 800px;
+            text-align: left;
+            background-color: #FFF9B6;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(162, 221, 240, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .roadmap.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .roadmap h2 {
+            text-align: center;
+            color: #4A4A4A;
+        }
+
+        .phase {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #B2F2BB;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(162, 221, 240, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .phase:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(162, 221, 240, 0.5);
+        }
+
+        .faq {
+            margin: 50px auto;
+            max-width: 800px;
+            text-align: left;
+            background-color: #FFF9B6;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(162, 221, 240, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .faq.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .faq h2 {
+            text-align: center;
+            color: #4A4A4A;
+        }
+
+        footer {
+            background-color: #FFF9B6;
+            padding: 10px;
+            margin-top: 50px;
+            position: relative;
+        }
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+            color: #4A4A4A;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: marquee 10s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .footer-beard {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        footer:hover .footer-beard {
+            opacity: 1;
+        }
+
+        .x-icon {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+        }
+        .x-icon img {
+            width: 100%;
+            height: auto;
+        }
+
+        #scroll-to-top {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background-color: #A2DDF0;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        #scroll-to-top:hover {
+            background-color: #7FC7D9;
+        }
+
+        #load-more {
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #A2DDF0;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="logo/1.gif" alt="ChainBeards Logo" class="logo">
+            <div class="speech-bubble">Mint me!</div>
+        </div>
+        <h1>ChainBeards</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#roadmap">Roadmap</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home">
+        <h2 id="typing-effect"></h2>
+        <p>Beards are more than just facial hair they’re a symbol of power, wisdom, and identity. ChainBeards is a collection of 333 uniquely crafted NFTs on the Stacks blockchain, secured by Bitcoin. Every piece in this exclusive series features bold and iconic beard styles, ranging from classic and refined to wild and untamed.</p>
+        <a href="https://create.gamma.io/minting-now" target="_blank" class="mint-button">Mint Your NFT</a>
+    </section>
+
+    <div class="nft-gallery">
+        <div class="nft-card" onclick="openLightbox('gallery/1.png')">
+            <img src="gallery/1.png" alt="ChainBeard #1">
+            <div class="nft-overlay">
+                <p>ChainBeard #1</p>
+                <button onclick="shareNFT('ChainBeard #1', 'gallery/1.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/2.png')">
+            <img src="gallery/2.png" alt="ChainBeard #2">
+            <div class="nft-overlay">
+                <p>ChainBeard #2</p>
+                <button onclick="shareNFT('ChainBeard #2', 'gallery/2.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/3.png')">
+            <img src="gallery/3.png" alt="ChainBeard #3">
+            <div class="nft-overlay">
+                <p>ChainBeard #3</p>
+                <button onclick="shareNFT('ChainBeard #3', 'gallery/3.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/4.png')">
+            <img src="gallery/4.png" alt="ChainBeard #4">
+            <div class="nft-overlay">
+                <p>ChainBeard #4</p>
+                <button onclick="shareNFT('ChainBeard #4', 'gallery/4.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/5.png')">
+            <img src="gallery/5.png" alt="ChainBeard #5">
+            <div class="nft-overlay">
+                <p>ChainBeard #5</p>
+                <button onclick="shareNFT('ChainBeard #5', 'gallery/5.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/6.png')">
+            <img src="gallery/6.png" alt="ChainBeard #6">
+            <div class="nft-overlay">
+                <p>ChainBeard #6</p>
+                <button onclick="shareNFT('ChainBeard #6', 'gallery/6.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/7.png')">
+            <img src="gallery/7.png" alt="ChainBeard #7">
+            <div class="nft-overlay">
+                <p>ChainBeard #7</p>
+                <button onclick="shareNFT('ChainBeard #7', 'gallery/7.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/8.png')">
+            <img src="gallery/8.png" alt="ChainBeard #8">
+            <div class="nft-overlay">
+                <p>ChainBeard #8</p>
+                <button onclick="shareNFT('ChainBeard #8', 'gallery/8.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/9.png')">
+            <img src="gallery/9.png" alt="ChainBeard #9">
+            <div class="nft-overlay">
+                <p>ChainBeard #9</p>
+                <button onclick="shareNFT('ChainBeard #9', 'gallery/9.png')">Share</button>
+            </div>
+        </div>
+        <div class="nft-card" onclick="openLightbox('gallery/10.png')">
+            <img src="gallery/10.png" alt="ChainBeard #10">
+            <div class="nft-overlay">
+                <p>ChainBeard #10</p>
+                <button onclick="shareNFT('ChainBeard #10', 'gallery/10.png')">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="load-more">Load More</button>
+
+    <section id="roadmap" class="roadmap">
+        <h2>Roadmap</h2>
+        <div class="phase">
+            <h3>Phase 1: The Foundation of the Beard (Deployment)</h3>
+            <p>Every great beard starts with a strong foundation. In this phase, we securely deploy the ChainBeards smart contract on the Stacks blockchain, ensuring transparency, security, and true ownership for every NFT. The groundwork is set, the strands of digital beards are coded, and the journey begins.</p>
+        </div>
+        <div class="phase">
+            <h3>Phase 2: The Beard Awakens (Minting)</h3>
+            <p>The razors are down it’s time to grow. The minting process officially opens, allowing collectors to claim their very own unique ChainBeards NFT. With only 333 available, each mint represents not just an acquisition, but an initiation into an exclusive brotherhood (and sisterhood) of beard enthusiasts in the Web3 space.</p>
+        </div>
+        <div class="phase">
+            <h3>Phase 3: The Brotherhood Expands (Collaborations)</h3>
+            <p>A beard is best when admired by many. We set out to forge alliances with artists, influencers, and Web3 pioneers to expand the ChainBeards ecosystem. Expect limited-edition collaborations, special editions, and exclusive perks for holders as the ChainBeards movement grows across the metaverse.</p>
+        </div>
+    </section>
+
+    <section id="faq" class="faq">
+        <h2>F A Q</h2>
+        <p><strong>What is ChainBeards?</strong><br>ChainBeards is an NFT collection of 333 unique characters on the Stacks blockchain.</p>
+        <p><strong>How can I mint a ChainBeards NFT?</strong><br>You can mint your NFT by clicking the mint button and visiting Gamma.io.</p>
+        <p><strong>What are the benefits of owning a ChainBeards NFT?</strong><br>Holders gain access to exclusive community perks, collaborations, and future developments.</p>
+    </section>
+
+    <footer>
+        <p>Powered by Stacks Blockchain & Gamma.io</p>
+        <div class="footer-beard">👋</div>
+    </footer>
+
+    <a href="https://x.com/ChainBeards" target="_blank" class="x-icon">
+        <img src="x.png" alt="X Logo">
+    </a>
+
+    <button id="scroll-to-top" title="Go to top">↑</button>
+
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="Lightbox Image">
+    </div>
+
+    <audio id="mint-sound" src="ding.mp3"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // Lightbox
+        function openLightbox(src) {
+            const lightbox = document.getElementById("lightbox");
+            const lightboxImg = document.getElementById("lightbox-img");
+            lightboxImg.src = src;
+            lightbox.style.display = "flex";
+        }
+        function closeLightbox() {
+            const lightbox = document.getElementById("lightbox");
+            lightbox.style.display = "none";
+        }
+
+        // Share NFT
+        function shareNFT(name, image) {
+            const url = `https://chainbeards.com/nft/${name}`;
+            const text = `Check out this awesome NFT: ${name}`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        // Load More
+        let visibleNFTs = 6;
+        const nftCards = document.querySelectorAll(".nft-card");
+        document.getElementById("load-more").addEventListener("click", () => {
+            visibleNFTs += 6;
+            nftCards.forEach((card, index) => {
+                if (index < visibleNFTs) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Scroll Animasi
+        document.addEventListener("scroll", () => {
+            const elements = document.querySelectorAll(".nft-card, .roadmap, .faq");
+            elements.forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight) {
+                    el.classList.add("visible");
+                }
+            });
+        });
+
+        // Scroll-to-Top Button
+        const scrollToTopButton = document.getElementById("scroll-to-top");
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 300) {
+                scrollToTopButton.style.display = "block";
+            } else {
+                scrollToTopButton.style.display = "none";
+            }
+        });
+        scrollToTopButton.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        // Typing Effect
+        const text = "ChainBeards – The Legendary Beards of Stacks!";
+        let index = 0;
+        const typingEffect = document.getElementById("typing-effect");
+        function type() {
+            if (index < text.length) {
+                typingEffect.textContent += text.charAt(index);
+                index++;
+                setTimeout(type, 100);
+            }
+        }
+        type();
+
+        // Confetti Effect
+        const mintButton = document.querySelector(".mint-button");
+        const mintSound = document.getElementById("mint-sound");
+        mintButton.addEventListener("click", () => {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            mintSound.play();
+        });
+    </script>
+</body>
+</html>
